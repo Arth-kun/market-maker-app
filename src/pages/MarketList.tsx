@@ -113,7 +113,7 @@ function MarketCard({
       className="bg-white p-6 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition-shadow"
       onClick={() => onSelect(market.id)}
     >
-      <h3 className="text-lg font-semibold">{market.market_name}</h3>
+      <h3 className="text-lg text-gray-900 font-semibold">{market.market_name}</h3>
       <p className="text-sm text-gray-500 mt-1">{market.edition_name}</p>
       {market.description && (
         <p className="text-gray-600 mt-2">{market.description}</p>
