@@ -136,8 +136,8 @@ export function MarketMap() {
                     return {
                         id: edition.id,
                         name: edition.name,
-                        market_name: edition.market?.name || 'Unknown Market',
-                        description: edition.market?.description || null,
+                        market_name: edition.market[0]?.name || 'Unknown Market',
+                        description: edition.market[0]?.description || null,
                         location: [place.latitude, place.longitude] as [number, number],
                         start_date: edition.start_date,
                         end_date: edition.end_date
