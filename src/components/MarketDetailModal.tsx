@@ -62,16 +62,16 @@ export function MarketDetailModal({ marketId, onClose }: Props) {
       return {
         id: data.id,
         edition_name: data.name,
-        market_name: data.market?.name || 'Unknown Market',
-        description: data.market?.description || null,
+        market_name: data.market[0]?.name || 'Unknown Market',
+        description: data.market[0]?.description || null,
         start_date: data.start_date,
         end_date: data.end_date,
         makers: data.market_edition_makers.map(mem => ({
-          id: mem.makers.id,
-          name: mem.makers.name,
-          description: mem.makers.description,
-          website: mem.makers.website,
-          social_media: mem.makers.social_media
+          id: mem.makers[0].id,
+          name: mem.makers[0].name,
+          description: mem.makers[0].description,
+          website: mem.makers[0].website,
+          social_media: mem.makers[0].social_media
         }))
       }
     },

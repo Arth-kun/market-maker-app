@@ -7,7 +7,7 @@ import { MarketDetailModal } from '../components/MarketDetailModal'
 import './MarketCalendar.css'
 
 interface CalendarMarket {
-  id: number
+  id: string
   title: string
   start: string
   end: string
@@ -41,14 +41,14 @@ export function MarketCalendar() {
       if (error) throw error
 
       return data.map(edition => ({
-        id: edition.id,
-        title: `${edition.market?.name || 'Unknown Market'} - ${edition.name}`,
+        id: edition.id.toString(),
+        title: `${edition.market[0]?.name || 'Unknown Market'} - ${edition.name}`,
         start: edition.start_date,
         end: edition.end_date,
         extendedProps: {
           edition_name: edition.name,
-          market_name: edition.market?.name || 'Unknown Market',
-          description: edition.market?.description || null
+          market_name: edition.market[0]?.name || 'Unknown Market',
+          description: edition.market[0]?.description || null
         }
       }))
     }
@@ -69,7 +69,7 @@ export function MarketCalendar() {
         initialView="dayGridMonth"
         events={events}
         eventClick={(info) => {
-          setSelectedMarketId(Number(info.event.id))
+          setSelectedMarketId(parseInt(info.event.id))
         }}
         height="100%"
         headerToolbar={{

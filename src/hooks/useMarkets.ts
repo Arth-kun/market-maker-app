@@ -1,6 +1,7 @@
 // src/hooks/useMarkets.ts
 import { useQuery } from '@tanstack/react-query'
-import { supabase, Market, MarketEdition, parseLocation } from '../lib/supabase'
+import { supabase, parseLocation } from '../lib/supabase'
+//import { supabase, Market, MarketEdition, parseLocation } from '../lib/supabase'
 
 export function useActiveMarketEditions() {
   return useQuery({
