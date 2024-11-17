@@ -1,13 +1,8 @@
--- seed.sql
--- Reset sequences and clean existing data (optional, uncomment if needed)
-/*
-TRUNCATE TABLE markets CASCADE;
-TRUNCATE TABLE market_editions CASCADE;
-TRUNCATE TABLE makers CASCADE;
-TRUNCATE TABLE maker_categories CASCADE;
-TRUNCATE TABLE market_edition_makers CASCADE;
-TRUNCATE TABLE maker_categories_junction CASCADE;
-*/
+-- Places
+INSERT INTO places (name, address, city, country, latitude, longitude, additional_info, is_active) VALUES
+    ('Marché Bonsecours', '350 Rue Saint-Paul Est', 'Montreal', 'Canada', 45.5082, -73.5521, 'Historic market building in Old Montreal', true),
+    ('Place des Arts', '175 Rue Sainte-Catherine Ouest', 'Montreal', 'Canada', 45.5077, -73.5694, 'Cultural complex with multiple halls', true),
+    ('Olympic Stadium', '4545 Avenue Pierre-de Coubertin', 'Montreal', 'Canada', 45.5579, -73.5515, 'Massive indoor space', true);
 
 -- Maker Categories
 INSERT INTO maker_categories (name, description) VALUES
@@ -24,11 +19,17 @@ INSERT INTO markets (name, description, is_active) VALUES
     ('Seasonal Makers Fair', 'Quarterly seasonal celebration of local makers', true),
     ('Night Market', 'Evening market with food and crafts', true);
 
--- Market Editions
-INSERT INTO market_editions (market_id, name, start_date, end_date, location, is_active) VALUES
-    ((SELECT id FROM markets WHERE name = 'Downtown Artisan Market'), 'Spring Downtown Market 2024', '2024-04-15', '2024-04-17', 'Central Plaza', true),
-    ((SELECT id FROM markets WHERE name = 'Seasonal Makers Fair'), 'Summer Makers Fair 2024', '2024-07-01', '2024-07-03', 'Convention Center', true),
-    ((SELECT id FROM markets WHERE name = 'Night Market'), 'Winter Night Market 2024', '2024-12-10', '2024-12-12', 'Old Port District', true);
+-- Market Editions (updated to use place_id)
+INSERT INTO market_editions (market_id, place_id, name, start_date, end_date, is_active) VALUES
+    ((SELECT id FROM markets WHERE name = 'Downtown Artisan Market'), 
+     (SELECT id FROM places WHERE name = 'Marché Bonsecours'),
+     'Spring Downtown Market 2024', '2024-04-15', '2024-04-17', true),
+    ((SELECT id FROM markets WHERE name = 'Seasonal Makers Fair'),
+     (SELECT id FROM places WHERE name = 'Place des Arts'),
+     'Summer Makers Fair 2024', '2024-07-01', '2024-07-03', true),
+    ((SELECT id FROM markets WHERE name = 'Night Market'),
+     (SELECT id FROM places WHERE name = 'Olympic Stadium'),
+     'Winter Night Market 2024', '2024-12-10', '2024-12-12', true);
 
 -- Makers
 INSERT INTO makers (name, description, contact_email, phone, website, social_media, is_active) VALUES
@@ -45,7 +46,6 @@ INSERT INTO maker_categories_junction (maker_id, category_id) VALUES
     ((SELECT id FROM makers WHERE name = 'Silver & Stone'), (SELECT id FROM maker_categories WHERE name = 'Jewelry')),
     ((SELECT id FROM makers WHERE name = 'Urban Textiles'), (SELECT id FROM maker_categories WHERE name = 'Textiles')),
     ((SELECT id FROM makers WHERE name = 'Sweet & Savory'), (SELECT id FROM maker_categories WHERE name = 'Food')),
-    -- Some makers might have multiple categories
     ((SELECT id FROM makers WHERE name = 'Sarah''s Ceramics'), (SELECT id FROM maker_categories WHERE name = 'Art'));
 
 -- Market Edition Makers
@@ -65,20 +65,3 @@ INSERT INTO market_edition_makers (market_edition_id, maker_id, booth_number, sp
     ((SELECT id FROM market_editions WHERE name = 'Winter Night Market 2024'),
      (SELECT id FROM makers WHERE name = 'Sweet & Savory'),
      'E5', 'Requires refrigeration');
-
--- Helpful test queries
-/*
--- Get all makers with their categories
-SELECT m.name as maker_name, string_agg(mc.name, ', ') as categories
-FROM makers m
-JOIN maker_categories_junction mcj ON m.id = mcj.maker_id
-JOIN maker_categories mc ON mcj.category_id = mc.id
-GROUP BY m.name;
-
--- Get all makers in a specific market edition
-SELECT me.name as market_edition, m.name as maker_name, mem.booth_number
-FROM market_editions me
-JOIN market_edition_makers mem ON me.id = mem.market_edition_id
-JOIN makers m ON mem.maker_id = m.id
-WHERE me.name = 'Spring Downtown Market 2024';
-*/
