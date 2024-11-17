@@ -27,6 +27,26 @@ interface Props {
   onClose: () => void
 }
 
+interface MarketEditionResponse {
+  id: number
+  name: string
+  start_date: string
+  end_date: string
+  market: {
+    name: string
+    description: string | null
+  } | null
+  market_edition_makers: {
+    maker: {
+      id: number
+      name: string
+      description: string | null
+      website: string | null
+      social_media: string | null
+    } | null
+  }[]
+}
+
 export function MarketDetailModal({ marketId, onClose }: Props) {
   const { data: market, isLoading } = useQuery<MarketDetails>({
     queryKey: ['market-details', marketId],
@@ -40,12 +60,12 @@ export function MarketDetailModal({ marketId, onClose }: Props) {
           name,
           start_date,
           end_date,
-          market:market_id (
+          market:markets!market_id (
             name,
             description
           ),
-          market_edition_makers (
-            makers (
+          market_edition_makers!market_edition_id (
+            maker:makers (
               id,
               name,
               description,
@@ -55,23 +75,23 @@ export function MarketDetailModal({ marketId, onClose }: Props) {
           )
         `)
         .eq('id', marketId)
-        .single()
+        .single<MarketEditionResponse>()
 
       if (error) throw error
 
       return {
         id: data.id,
         edition_name: data.name,
-        market_name: data.market[0]?.name || 'Unknown Market',
-        description: data.market[0]?.description || null,
+        market_name: data.market?.name || 'Unknown Market',
+        description: data.market?.description || null,
         start_date: data.start_date,
         end_date: data.end_date,
-        makers: data.market_edition_makers.map(mem => ({
-          id: mem.makers[0].id,
-          name: mem.makers[0].name,
-          description: mem.makers[0].description,
-          website: mem.makers[0].website,
-          social_media: mem.makers[0].social_media
+        makers: data.market_edition_makers.map((mem: any) => ({
+          id: mem.maker?.id,
+          name: mem.maker?.name,
+          description: mem.maker?.description,
+          website: mem.maker?.website,
+          social_media: mem.maker?.social_media
         }))
       }
     },

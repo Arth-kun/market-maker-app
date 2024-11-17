@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { supabase } from '../lib/supabase'
+import { MarketEditionResponse, supabase } from '../lib/supabase'
 import { format } from 'date-fns'
 import { useState } from 'react'
 import { MarketDetailModal } from '../components/MarketDetailModal'
@@ -27,20 +27,21 @@ export function MarketList() {
             start_date,
             end_date,
             is_active,
-            markets (
+            market:markets (
               name,
               description
             )
           `)
           .eq('is_active', true)
+          .returns<MarketEditionResponse[]>()
 
         if (error) throw error
 
         return data.map(edition => ({
           id: edition.id,
           edition_name: edition.name,
-          market_name: edition.markets[0]?.name || 'Unknown Market',
-          description: edition.markets[0]?.description || null,
+          market_name: edition.market?.name || 'Unknown Market',
+          description: edition.market?.description || null,
           start_date: edition.start_date,
           end_date: edition.end_date,
           is_active: edition.is_active

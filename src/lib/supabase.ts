@@ -11,24 +11,41 @@ export interface Market {
   id: number
   name: string
   description: string | null
-  is_active: boolean
-  created_at: string
-  updated_at: string
+}
+
+export interface Maker {
+  id: number
+  name: string
+  description: string | null
+  website: string | null
+  social_media: string | null
 }
 
 export interface MarketEdition {
   id: number
-  market_id: number
   name: string
   start_date: string
   end_date: string
-  location: string
   is_active: boolean
-  created_at: string
-  updated_at: string
-  // We'll add these as custom fields from our query
-  latitude?: number
-  longitude?: number
+  market: Market
+  markets?: Market
+  market_edition_makers?: {
+    maker: Maker
+  }[]
+}
+
+// Add Database response types
+export interface MarketEditionResponse {
+  id: number
+  name: string
+  start_date: string
+  end_date: string
+  is_active: boolean
+  place_id: number
+  market: {
+    name: string
+    description: string | null
+  } | null
 }
 
 // Helper function to extract coordinates from location string

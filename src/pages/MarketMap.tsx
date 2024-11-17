@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { MarketEditionResponse, supabase } from '../lib/supabase'
 import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css"
 import { addDays } from 'date-fns'
@@ -114,7 +114,7 @@ export function MarketMap() {
                     start_date,
                     end_date,
                     place_id,
-                    market:market_id (
+                    market:markets!market_id (
                         name,
                         description
                     )
@@ -122,11 +122,12 @@ export function MarketMap() {
                 .eq('is_active', true)
                 .gte('start_date', startDate.toISOString().split('T')[0])
                 .lte('start_date', endDate.toISOString().split('T')[0])
+                .returns<MarketEditionResponse[]>()
 
             if (marketsError) throw marketsError
 
             const markers = marketEditions
-                .map(edition => {
+                .map((edition: MarketEditionResponse) => {
                     const place = places?.find(p => p.id === edition.place_id)
 
                     if (!place?.latitude || !place?.longitude) {
@@ -136,14 +137,14 @@ export function MarketMap() {
                     return {
                         id: edition.id,
                         name: edition.name,
-                        market_name: edition.market[0]?.name || 'Unknown Market',
-                        description: edition.market[0]?.description || null,
+                        market_name: edition.market?.name || 'Unknown Market',
+                        description: edition.market?.description || null,
                         location: [place.latitude, place.longitude] as [number, number],
                         start_date: edition.start_date,
                         end_date: edition.end_date
                     }
                 })
-                .filter((marker): marker is MapMarker => marker !== null)
+                .filter((marker: unknown): marker is MapMarker => marker !== null)
 
             return markers
         }

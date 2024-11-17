@@ -2,7 +2,7 @@ import { useState } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import { useQuery } from '@tanstack/react-query'
-import { supabase } from '../lib/supabase'
+import { MarketEditionResponse, supabase } from '../lib/supabase'
 import { MarketDetailModal } from '../components/MarketDetailModal'
 import './MarketCalendar.css'
 
@@ -31,24 +31,25 @@ export function MarketCalendar() {
           name,
           start_date,
           end_date,
-          market:market_id (
+          market:markets!market_id (
             name,
             description
           )
         `)
         .eq('is_active', true)
+        .returns<MarketEditionResponse[]>()
 
       if (error) throw error
 
-      return data.map(edition => ({
+      return data.map((edition: MarketEditionResponse) => ({
         id: edition.id.toString(),
-        title: `${edition.market[0]?.name || 'Unknown Market'} - ${edition.name}`,
+        title: `${edition.market?.name || 'Unknown Market'} - ${edition.name}`,
         start: edition.start_date,
         end: edition.end_date,
         extendedProps: {
           edition_name: edition.name,
-          market_name: edition.market[0]?.name || 'Unknown Market',
-          description: edition.market[0]?.description || null
+          market_name: edition.market?.name || 'Unknown Market',
+          description: edition.market?.description || null
         }
       }))
     }
