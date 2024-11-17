@@ -27,7 +27,7 @@ export function Layout() {
                   to="/markets"
                   className="inline-flex items-center px-1 pt-1 text-gray-900"
                 >
-                  Markets
+                  Markets List
                 </Link>
               </div>
             </div>
