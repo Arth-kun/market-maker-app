@@ -3,6 +3,11 @@ import { MarketEditionResponse, supabase } from '../lib/supabase'
 import { format } from 'date-fns'
 import { useState } from 'react'
 import { MarketDetailModal } from '../components/MarketDetailModal'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CalendarIcon } from "lucide-react"
 
 interface MarketListItem {
   id: string
@@ -50,7 +55,11 @@ export function MarketList() {
     })
   
     if (isLoading) {
-      return <div>Loading...</div>
+      return (
+        <div className="flex items-center justify-center h-screen">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      )
     }
 
     const today = new Date()
@@ -58,49 +67,65 @@ export function MarketList() {
     const pastMarkets = markets?.filter(market => new Date(market.start_date) < today) || []
   
     return (
-      <div className="p-6 space-y-8 bg-gray-50">
+      <div className="container mx-auto py-8 px-4">
         <MarketDetailModal
           marketId={selectedMarketId}
           onClose={() => setSelectedMarketId(null)}
         />
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-2xl font-bold mb-6 text-gray-900">Upcoming Markets</h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {upcomingMarkets.length > 0 ? (
-              upcomingMarkets.map((market) => (
-                <MarketCard 
-                  key={market.id} 
-                  market={market} 
-                  onSelect={setSelectedMarketId}
-                />
-              ))
-            ) : (
-              <p className="text-gray-500">No upcoming markets scheduled.</p>
-            )}
+        
+        <Tabs defaultValue="upcoming" className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold">Markets</h1>
+            <TabsList>
+              <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+              <TabsTrigger value="past">Past</TabsTrigger>
+            </TabsList>
           </div>
-        </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-2xl font-bold mb-6 text-gray-900">Past Markets</h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {pastMarkets.length > 0 ? (
-              pastMarkets.map((market) => (
-                <MarketCard 
-                  key={market.id} 
-                  market={market} 
-                  onSelect={setSelectedMarketId}
-                />
-              ))
-            ) : (
-              <p className="text-gray-500">No past markets found.</p>
-            )}
-          </div>
-        </div>
+          <TabsContent value="upcoming" className="space-y-4">
+            <ScrollArea className="h-[calc(100vh-12rem)]">
+              {upcomingMarkets.length > 0 ? (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {upcomingMarkets.map((market) => (
+                    <MarketCard 
+                      key={market.id} 
+                      market={market} 
+                      onSelect={setSelectedMarketId}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-48">
+                  <p className="text-muted-foreground">No upcoming markets scheduled.</p>
+                </div>
+              )}
+            </ScrollArea>
+          </TabsContent>
+
+          <TabsContent value="past" className="space-y-4">
+            <ScrollArea className="h-[calc(100vh-12rem)]">
+              {pastMarkets.length > 0 ? (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {pastMarkets.map((market) => (
+                    <MarketCard 
+                      key={market.id} 
+                      market={market} 
+                      onSelect={setSelectedMarketId}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-48">
+                  <p className="text-muted-foreground">No past markets found.</p>
+                </div>
+              )}
+            </ScrollArea>
+          </TabsContent>
+        </Tabs>
       </div>
     )
 }
 
-// Separate component for the market card to reduce duplication
 function MarketCard({ 
   market, 
   onSelect 
@@ -109,19 +134,35 @@ function MarketCard({
   onSelect: (id: string) => void 
 }) {
   return (
-    <div 
-      className="bg-white p-6 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+    <Card 
+      className="hover:bg-accent/50 transition-colors cursor-pointer"
       onClick={() => onSelect(market.id)}
     >
-      <h3 className="text-lg text-gray-900 font-semibold">{market.market_name}</h3>
-      <p className="text-sm text-gray-500 mt-1">{market.edition_name}</p>
+      <CardHeader className="pb-3">
+        <CardTitle>{market.market_name}</CardTitle>
+        <CardDescription>{market.edition_name}</CardDescription>
+      </CardHeader>
       {market.description && (
-        <p className="text-gray-600 mt-2">{market.description}</p>
+        <CardContent className="pb-3">
+          <p className="text-sm text-muted-foreground">
+            {market.description}
+          </p>
+        </CardContent>
       )}
-      <div className="mt-4 text-sm text-gray-500">
-        <p>From: {format(new Date(market.start_date), 'PPP')}</p>
-        <p>To: {format(new Date(market.end_date), 'PPP')}</p>
-      </div>
-    </div>
+      <CardContent className="flex flex-col gap-2">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <CalendarIcon className="h-4 w-4" />
+          <div className="flex gap-2">
+            <Badge variant="outline">
+              {format(new Date(market.start_date), 'PPP')}
+            </Badge>
+            <span>→</span>
+            <Badge variant="outline">
+              {format(new Date(market.end_date), 'PPP')}
+            </Badge>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

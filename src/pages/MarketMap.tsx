@@ -5,10 +5,20 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useState } from 'react'
 import { MarketEditionResponse, supabase } from '../lib/supabase'
-import DatePicker from 'react-datepicker'
-import "react-datepicker/dist/react-datepicker.css"
-import { addDays } from 'date-fns'
+import { format } from "date-fns"
+import { CalendarIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { MarketDetailModal } from '../components/MarketDetailModal'
+import { addDays } from 'date-fns'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
 // Add this near the top of your file, after imports
 L.Icon.Default.imagePath = "https://unpkg.com/leaflet@1.7.1/dist/images/";
@@ -63,26 +73,40 @@ function MarketMarkers({
                     }}
                 >
                     <Popup autoPan={false}>
-                        <div className="min-w-[200px]">
-                            <h3 className="font-semibold text-gray-900">{market.market_name}</h3>
-                            <p className="text-sm text-gray-600">{market.name}</p>
+                        <Card className="min-w-[250px] border-none shadow-none">
+                            <CardHeader className="p-3 pb-2">
+                                <CardTitle className="text-base">{market.market_name}</CardTitle>
+                                <CardDescription className="text-sm">
+                                    {market.name}
+                                </CardDescription>
+                            </CardHeader>
                             {market.description && (
-                                <p className="text-sm text-gray-600 mt-1">{market.description}</p>
+                                <CardContent className="p-3 pt-0 pb-2">
+                                    <p className="text-sm text-muted-foreground">
+                                        {market.description}
+                                    </p>
+                                </CardContent>
                             )}
-                            <div className="mt-2 text-sm text-gray-500">
-                                <p>From: {new Date(market.start_date).toLocaleDateString()}</p>
-                                <p>To: {new Date(market.end_date).toLocaleDateString()}</p>
-                            </div>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onSelectMarket(market.id);
-                                }}
-                                className="mt-3 w-full px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
-                            >
-                                See details
-                            </button>
-                        </div>
+                            <CardContent className="p-3 pt-0 pb-2 flex gap-2">
+                                <Badge variant="outline" className="text-xs">
+                                    {new Date(market.start_date).toLocaleDateString()}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                    {new Date(market.end_date).toLocaleDateString()}
+                                </Badge>
+                            </CardContent>
+                            <CardFooter className="p-3 pt-0">
+                                <Button 
+                                    className="w-full"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onSelectMarket(market.id);
+                                    }}
+                                >
+                                    See details
+                                </Button>
+                            </CardFooter>
+                        </Card>
                     </Popup>
                 </Marker>
             ))}
@@ -160,30 +184,59 @@ export function MarketMap() {
                 marketId={selectedMarketId}
                 onClose={() => setSelectedMarketId(null)}
             />
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] bg-white p-4 rounded-lg shadow-md">
-                <div className="flex gap-4 items-center">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                        <DatePicker
-                            selected={startDate}
-                            onChange={(date) => date && setStartDate(date)}
-                            selectsStart
-                            startDate={startDate}
-                            endDate={endDate}
-                            className="p-2 border rounded"
-                        />
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[40] bg-white p-4 rounded-lg shadow-md">
+                <div className="flex gap-4 items-end">
+                    <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium text-gray-700">Start Date</label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-[200px] justify-start text-left font-normal",
+                                        !startDate && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 bg-white">
+                                <Calendar
+                                    mode="single"
+                                    selected={startDate}
+                                    onSelect={(date: Date | undefined) => date && setStartDate(date)}
+                                    initialFocus
+                                />
+                            </PopoverContent>
+                        </Popover>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                        <DatePicker
-                            selected={endDate}
-                            onChange={(date) => date && setEndDate(date)}
-                            selectsEnd
-                            startDate={startDate}
-                            endDate={endDate}
-                            minDate={startDate}
-                            className="p-2 border rounded"
-                        />
+
+                    <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium text-gray-700">End Date</label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-[200px] justify-start text-left font-normal",
+                                        !endDate && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                    mode="single"
+                                    selected={endDate}
+                                    onSelect={(date: Date | undefined) => date && setEndDate(date)}
+                                    initialFocus
+                                    disabled={(date) => date < startDate}
+                                />
+                            </PopoverContent>
+                        </Popover>
                     </div>
                 </div>
             </div>
