@@ -8,13 +8,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Type definitions for our database
 export interface Market {
-  id: number
+  id: string
   name: string
   description: string | null
 }
 
 export interface Maker {
-  id: number
+  id: string
   name: string
   description: string | null
   website: string | null
@@ -22,7 +22,7 @@ export interface Maker {
 }
 
 export interface MarketEdition {
-  id: number
+  id: string
   name: string
   start_date: string
   end_date: string
@@ -36,12 +36,12 @@ export interface MarketEdition {
 
 // Add Database response types
 export interface MarketEditionResponse {
-  id: number
+  id: string
   name: string
   start_date: string
   end_date: string
   is_active: boolean
-  place_id: number
+  place_id: string
   market: {
     name: string
     description: string | null

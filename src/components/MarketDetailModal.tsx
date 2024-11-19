@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase'
 import { format } from 'date-fns'
 
 interface Maker {
-  id: number
+  id: string
   name: string
   description: string | null
   website: string | null
@@ -13,7 +13,7 @@ interface Maker {
 }
 
 interface MarketDetails {
-  id: number
+  id: string
   edition_name: string
   market_name: string
   description: string | null
@@ -23,12 +23,12 @@ interface MarketDetails {
 }
 
 interface Props {
-  marketId: number | null
+  marketId: string | null
   onClose: () => void
 }
 
 interface MarketEditionResponse {
-  id: number
+  id: string
   name: string
   start_date: string
   end_date: string
@@ -38,7 +38,7 @@ interface MarketEditionResponse {
   } | null
   market_edition_makers: {
     maker: {
-      id: number
+      id: string
       name: string
       description: string | null
       website: string | null

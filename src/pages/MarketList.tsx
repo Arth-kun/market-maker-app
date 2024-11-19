@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { MarketDetailModal } from '../components/MarketDetailModal'
 
 interface MarketListItem {
-  id: number
+  id: string
   edition_name: string
   market_name: string
   description: string | null
@@ -15,7 +15,7 @@ interface MarketListItem {
 }
 
 export function MarketList() {
-    const [selectedMarketId, setSelectedMarketId] = useState<number | null>(null)
+    const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null)
     const { data: markets, isLoading } = useQuery<MarketListItem[]>({
       queryKey: ['markets-list'],
       queryFn: async () => {
@@ -106,7 +106,7 @@ function MarketCard({
   onSelect 
 }: { 
   market: MarketListItem
-  onSelect: (id: number) => void 
+  onSelect: (id: string) => void 
 }) {
   return (
     <div 

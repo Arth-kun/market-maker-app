@@ -27,7 +27,7 @@ export function useActiveMarketEditions() {
   })
 }
 
-export function useMarketEdition(id: number) {
+export function useMarketEdition(id: string) {
   return useQuery({
     queryKey: ['marketEdition', id],
     queryFn: async () => {

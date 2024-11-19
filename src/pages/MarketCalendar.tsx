@@ -19,7 +19,7 @@ interface CalendarMarket {
 }
 
 export function MarketCalendar() {
-  const [selectedMarketId, setSelectedMarketId] = useState<number | null>(null)
+  const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null)
 
   const { data: events, isLoading } = useQuery<CalendarMarket[]>({
     queryKey: ['calendar-markets'],
@@ -70,7 +70,7 @@ export function MarketCalendar() {
         initialView="dayGridMonth"
         events={events}
         eventClick={(info) => {
-          setSelectedMarketId(parseInt(info.event.id))
+          setSelectedMarketId(info.event.id)
         }}
         height="100%"
         headerToolbar={{

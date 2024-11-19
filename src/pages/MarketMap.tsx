@@ -28,7 +28,7 @@ const defaultIcon = L.icon({
 const DEFAULT_CENTER: [number, number] = [45.5017, -73.5673]
 
 interface MapMarker {
-    id: number
+    id: string
     name: string
     market_name: string
     description: string | null
@@ -42,7 +42,7 @@ function MarketMarkers({
   onSelectMarket 
 }: { 
   markets: MapMarker[]
-  onSelectMarket: (id: number) => void
+  onSelectMarket: (id: string) => void
 }) {
     const map = useMap();
 
@@ -94,7 +94,7 @@ export function MarketMap() {
     const [map, setMap] = useState<L.Map | null>(null)
     const [startDate, setStartDate] = useState<Date>(new Date())
     const [endDate, setEndDate] = useState<Date>(addDays(new Date(), 30))
-    const [selectedMarketId, setSelectedMarketId] = useState<number | null>(null)
+    const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null)
 
     const { data: markets, isLoading } = useQuery<MapMarker[]>({
         queryKey: ['markets', startDate.toISOString(), endDate.toISOString()],
