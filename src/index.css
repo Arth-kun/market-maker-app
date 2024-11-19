@@ -148,32 +148,3 @@ body {
     @apply bg-background text-foreground;
   }
 }
-
-.leaflet-popup-content-wrapper {
-    padding: 0 !important;
-    overflow: hidden;
-    border-radius: var(--radius) !important;
-}
-
-.leaflet-popup-content {
-    margin: 0 !important;
-}
-
-.leaflet-popup-tip {
-    background: hsl(var(--background)) !important;
-    border: 1px solid hsl(var(--border));
-}
-
-.leaflet-popup-content-wrapper {
-    background: hsl(var(--background)) !important;
-    border: 1px solid hsl(var(--border));
-}
-
-/* Optional: Add hover effect to markers */
-.leaflet-marker-icon {
-    transition: transform 0.2s ease;
-}
-
-.leaflet-marker-icon:hover {
-    transform: scale(1.1);
-}
