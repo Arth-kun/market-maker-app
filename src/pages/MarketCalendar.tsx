@@ -1,28 +1,25 @@
-import { useState } from 'react'
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
 import { useQuery } from '@tanstack/react-query'
 import { MarketEditionResponse, supabase } from '../lib/supabase'
+import { useState } from 'react'
 import { MarketDetailModal } from '../components/MarketDetailModal'
-import './MarketCalendar.css'
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import { Card, CardContent } from "@/components/ui/card"
 
-interface CalendarMarket {
+interface MarketEvent {
   id: string
-  title: string
-  start: string
-  end: string
-  extendedProps: {
-    edition_name: string
-    market_name: string
-    description: string | null
-  }
+  name: string
+  market_name: string
+  description: string | null
+  start_date: string
+  end_date: string
 }
 
 export function MarketCalendar() {
   const [selectedMarketId, setSelectedMarketId] = useState<string | null>(null)
 
-  const { data: events, isLoading } = useQuery<CalendarMarket[]>({
-    queryKey: ['calendar-markets'],
+  const { data: markets } = useQuery<MarketEvent[]>({
+    queryKey: ['markets-calendar'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('market_editions')
@@ -31,7 +28,7 @@ export function MarketCalendar() {
           name,
           start_date,
           end_date,
-          market:markets!market_id (
+          market:markets (
             name,
             description
           )
@@ -41,60 +38,70 @@ export function MarketCalendar() {
 
       if (error) throw error
 
-      return data.map((edition: MarketEditionResponse) => ({
-        id: edition.id.toString(),
-        title: `${edition.market?.name || 'Unknown Market'} - ${edition.name}`,
-        start: edition.start_date,
-        end: edition.end_date,
-        extendedProps: {
-          edition_name: edition.name,
-          market_name: edition.market?.name || 'Unknown Market',
-          description: edition.market?.description || null
-        }
+      return data.map(edition => ({
+        id: edition.id,
+        name: edition.name,
+        market_name: edition.market?.name || 'Unknown Market',
+        description: edition.market?.description || null,
+        start_date: edition.start_date,
+        end_date: edition.end_date
       }))
     }
   })
 
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-full">Loading...</div>
-  }
+  const events = markets?.map(market => ({
+    id: market.id,
+    title: market.name,
+    start: market.start_date,
+    end: market.end_date,
+    extendedProps: {
+      market_name: market.market_name,
+      edition_name: market.name,
+      description: market.description
+    }
+  }))
 
   return (
-    <div className="p-6 h-full bg-white">
+    <div className="container mx-auto py-8 px-4">
       <MarketDetailModal
         marketId={selectedMarketId}
         onClose={() => setSelectedMarketId(null)}
       />
-      <FullCalendar
-        plugins={[dayGridPlugin]}
-        initialView="dayGridMonth"
-        events={events}
-        eventClick={(info) => {
-          setSelectedMarketId(info.event.id)
-        }}
-        height="100%"
-        headerToolbar={{
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,dayGridWeek'
-        }}
-        buttonText={{
-          today: 'Today',
-          month: 'Month',
-          week: 'Week'
-        }}
-        eventContent={(eventInfo) => (
-          <div className="p-1 text-sm overflow-hidden">
-            <div className="font-medium truncate">
-              {eventInfo.event.extendedProps.market_name}
-            </div>
-            <div className="text-xs text-gray-600 truncate">
-              {eventInfo.event.extendedProps.edition_name}
-            </div>
-          </div>
-        )}
-        eventClassNames="cursor-pointer hover:bg-blue-50"
-      />
+      
+      <Card>
+        <CardContent className="p-6">
+          <FullCalendar
+            plugins={[dayGridPlugin]}
+            initialView="dayGridMonth"
+            events={events}
+            eventClick={(info) => {
+              setSelectedMarketId(info.event.id)
+            }}
+            height="calc(100vh - 10rem)"
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,dayGridWeek'
+            }}
+            buttonText={{
+              today: 'Today',
+              month: 'Month',
+              week: 'Week'
+            }}
+            eventContent={(eventInfo) => (
+              <div className="p-1 text-sm overflow-hidden">
+                <div className="font-medium truncate">
+                  {eventInfo.event.extendedProps.market_name}
+                </div>
+                <div className="text-xs truncate">
+                  {eventInfo.event.extendedProps.edition_name}
+                </div>
+              </div>
+            )}
+            eventClassNames="cursor-pointer hover:bg-primary"
+          />
+        </CardContent>
+      </Card>
     </div>
   )
 } 

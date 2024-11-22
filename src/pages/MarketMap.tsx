@@ -184,8 +184,8 @@ export function MarketMap() {
                 marketId={selectedMarketId}
                 onClose={() => setSelectedMarketId(null)}
             />
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[40] bg-white p-4 rounded-lg shadow-md">
-                <div className="flex gap-4 items-end">
+            <div className="absolute inset-x-4 top-20 lg:inset-x-auto lg:top-4 lg:left-1/2 lg:-translate-x-1/2 z-[40] bg-white p-4 rounded-lg shadow-md">
+                <div className="flex flex-col lg:flex-row lg:items-end gap-4">
                     <div className="flex flex-col gap-2">
                         <label className="text-sm font-medium text-gray-700">Start Date</label>
                         <Popover>
@@ -193,7 +193,7 @@ export function MarketMap() {
                                 <Button
                                     variant={"outline"}
                                     className={cn(
-                                        "w-[200px] justify-start text-left font-normal",
+                                        "w-full lg:w-[200px] justify-start text-left font-normal",
                                         !startDate && "text-muted-foreground"
                                     )}
                                 >
@@ -219,7 +219,7 @@ export function MarketMap() {
                                 <Button
                                     variant={"outline"}
                                     className={cn(
-                                        "w-[200px] justify-start text-left font-normal",
+                                        "w-full lg:w-[200px] justify-start text-left font-normal",
                                         !endDate && "text-muted-foreground"
                                     )}
                                 >

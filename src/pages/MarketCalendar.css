@@ -47,4 +47,44 @@
 
 .fc-event:hover {
   background-color: #bfdbfe;
+}
+
+.fc {
+  --fc-border-color: hsl(var(--border));
+  --fc-button-text-color: hsl(var(--foreground));
+  --fc-button-bg-color: hsl(var(--background));
+  --fc-button-border-color: hsl(var(--border));
+  --fc-button-hover-bg-color: hsl(var(--accent));
+  --fc-button-hover-border-color: hsl(var(--border));
+  --fc-button-active-bg-color: hsl(var(--primary));
+  --fc-button-active-border-color: hsl(var(--primary));
+  --fc-event-bg-color: hsl(var(--primary));
+  --fc-event-border-color: hsl(var(--primary));
+  --fc-event-text-color: hsl(var(--primary-foreground));
+  --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
+}
+
+.fc .fc-button {
+  @apply rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+}
+
+.fc .fc-toolbar-title {
+  @apply text-lg font-semibold;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+  @apply text-primary-foreground;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+  @apply rounded-md border border-border;
+}
+
+.fc .fc-day-today {
+  background: hsl(var(--accent)) !important;
+}
+
+.fc-event {
+  @apply rounded-md border-none shadow-sm;
 } 
