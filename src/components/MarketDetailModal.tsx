@@ -39,6 +39,14 @@ interface Props {
   onClose: () => void
 }
 
+interface MarketDay {
+  id: string
+  date: string
+  start_time: string
+  end_time: string
+  is_active: boolean
+}
+
 interface MarketEditionResponse {
   id: string
   name: string
@@ -57,6 +65,7 @@ interface MarketEditionResponse {
       social_media: string | null
     } | null
   }[]
+  market_days: MarketDay[]
 }
 
 export function MarketDetailModal({ marketId, onClose }: Props) {
@@ -66,28 +75,35 @@ export function MarketDetailModal({ marketId, onClose }: Props) {
       if (!marketId) throw new Error('No market ID provided')
       
       const { data, error } = await supabase
-        .from('market_editions')
-        .select(`
-          id,
+      .from('market_editions')
+      .select(`
+        id,
+        name,
+        start_date,
+        end_date,
+        market:markets!market_id (
           name,
-          start_date,
-          end_date,
-          market:markets!market_id (
+          description
+        ),
+        market_edition_makers!market_edition_id (
+          maker:makers (
+            id,
             name,
-            description
-          ),
-          market_edition_makers!market_edition_id (
-            maker:makers (
-              id,
-              name,
-              description,
-              website,
-              social_media
-            )
+            description,
+            website,
+            social_media
           )
-        `)
-        .eq('id', marketId)
-        .single<MarketEditionResponse>()
+        ),
+        market_days!market_edition_id (
+          id,
+          date,
+          start_time,
+          end_time,
+          is_active
+        )
+      `)
+      .eq('id', marketId)
+      .single<MarketEditionResponse>()
 
       if (error) throw error
 
@@ -128,6 +144,9 @@ export function MarketDetailModal({ marketId, onClose }: Props) {
             </DialogDescription>
           )}
           <div className="flex gap-2 mt-4">
+            {/* Il faut ajout un system de tabs, et qu'au lieu d'avoir from to on mette chaque jour du marché sous forme de tab
+            Dans le titre de chaque tab on met heure de début heure de fin (ou dans le détail à voir) puis on affiche les artisans pour chaque jour
+             */}
             <Badge variant="outline">
               From: {market && format(new Date(market.start_date), 'PPP')}
             </Badge>
